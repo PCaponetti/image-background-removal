@@ -46,30 +46,32 @@ var imageTransparencyFix = function (imgJ, outline) {
         var col = 0, row = 0, gr = false, gl = false, gu = false, gd = false;
         while (stack.length > 0) {
             var ind = stack.pop();
-            if (isWhite(pixel[ind + r], pixel[ind + g], pixel[ind + b])) // if white then change alpha to 0
-            {
-                // kinda do some alpha related to how white the pixel is (fuzzy?)
-                pixel[ind + a] = (765 - pixel[ind + r] - pixel[ind + g] - pixel[ind + b]) / 3;
+            if (pixel[ind + a] == 255) {
+                if (isWhite(pixel[ind + r], pixel[ind + g], pixel[ind + b])) // if white then change alpha to 0
+                {
+                    // kinda do some alpha related to how white the pixel is (fuzzy?)
+                    pixel[ind + a] = (765 - pixel[ind + r] - pixel[ind + g] - pixel[ind + b]) / 3;
 
-                // push all the neighbors
-                col = ((ind / 4) % w) + 1;
-                row = Math.floor(ind / 4 / w) + 1;
-                gr = col < w && pixel[ind + 4 + a] == 255;
-                gl = col > 1 && pixel[ind - 4 + a] == 255;
-                gu = row > 1 && pixel[ind - (w * 4) + a] == 255;
-                gd = row < h && pixel[ind + (w * 4) + a] == 255;
+                    // push all the neighbors
+                    col = ((ind / 4) % w) + 1;
+                    row = Math.floor(ind / 4 / w) + 1;
+                    gr = col < w && pixel[ind + 4 + a] == 255;
+                    gl = col > 1 && pixel[ind - 4 + a] == 255;
+                    gu = row > 1 && pixel[ind - (w * 4) + a] == 255;
+                    gd = row < h && pixel[ind + (w * 4) + a] == 255;
 
-                if (gu && gl && pixel[ind - 4 - (w * 4) + a] == 255) { stack.push(ind - 4 - (w * 4)); }
-                if (gu) { stack.push(ind - (w * 4)); }
-                if (gu && gr && pixel[ind + 4 - (w * 4) + a] == 255) { stack.push(ind + 4 - (w * 4)); }
-                if (gl) { stack.push(ind - 4); }
-                if (gr) { stack.push(ind + 4); }
-                if (gd && gl && pixel[(ind + (w * 4)) - 4 + a] == 255) { stack.push((ind + (w * 4)) - 4); }
-                if (gd) { stack.push(ind + (w * 4)); }
-                if (gd && gr && pixel[(ind + (w * 4)) + 4 + a] == 255) { stack.push((ind + (w * 4)) + 4); }
-            } else {
-                // this is a border pixel, give it half opacity
-                pixel[ind + a] = 150;
+                    if (gu && gl && pixel[ind - 4 - (w * 4) + a] == 255) { stack.push(ind - 4 - (w * 4)); }
+                    if (gu) { stack.push(ind - (w * 4)); }
+                    if (gu && gr && pixel[ind + 4 - (w * 4) + a] == 255) { stack.push(ind + 4 - (w * 4)); }
+                    if (gl) { stack.push(ind - 4); }
+                    if (gr) { stack.push(ind + 4); }
+                    if (gd && gl && pixel[(ind + (w * 4)) - 4 + a] == 255) { stack.push((ind + (w * 4)) - 4); }
+                    if (gd) { stack.push(ind + (w * 4)); }
+                    if (gd && gr && pixel[(ind + (w * 4)) + 4 + a] == 255) { stack.push((ind + (w * 4)) + 4); }
+                } else {
+                    // this is a border pixel, give it half opacity
+                    pixel[ind + a] = 150;
+                }
             }
         }
     } else {
